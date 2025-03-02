@@ -52,11 +52,11 @@ export function SpindleRpmPanel() {
         return () => socket.close()
     })
 
-    const CHART_TITLE = "Radial Chart - Shape";
-    const CHART_DESCRIPTION = "January - June 2024";
-    const TRENDING_TEXT = "Trending up by 5.2% this month";
-    const FOOTER_TEXT = "Showing total visitors for the last 6 months";
-    const VISITORS_LABEL = "Revs/min";
+    const CHART_TITLE = "Spindle Speed";
+    const CHART_DESCRIPTION = "Current RPM Reading";
+    const TRENDING_TEXT = "Spindle operating normally";
+    const FOOTER_TEXT = "Displaying real-time spindle rotation speed";
+    const VISITORS_LABEL = "RPM";
 
     const MAX_VALUE = 2000;
 

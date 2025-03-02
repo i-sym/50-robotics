@@ -9,6 +9,17 @@ import { createXRStore, XR } from "@react-three/xr";
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { MovableCNCMachine } from "../moveable-cnc-machine/MovableCNCMachine";
+import { Maximize2 } from "lucide-react";
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 export default function Machine3DView() {
 
     const store = createXRStore()
@@ -23,19 +34,51 @@ export default function Machine3DView() {
 
     return (
 
-
-        <Card className="w-[350px]">
+        <Card >
             <CardHeader>
-                <CardTitle>3D View</CardTitle>
+                <CardTitle className="relative">3D View
+                    <Dialog>
+                        <DialogTrigger className="absolute right-0 top-0">
+                            <Maximize2 className="h-5 w-5 cursor-pointer" />
+                        </DialogTrigger>
+                        <DialogContent className="w-7xl">
+                            <DialogHeader >
+                                <DialogTitle>Live feed</DialogTitle>
+                                <DialogDescription>
+
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="">
+                                <div className="aspect-[4/3] w-full">
+                                    <Canvas camera={{ position: [2, 2, 2], zoom: 140 }} orthographic>
+                                        {/* <XR store={store} > */}
+                                        <ambientLight intensity={0.5} />
+                                        <Environment preset="city" environmentIntensity={0.5} background={false} />
+                                        <group position={[-0.3, 0 - 0.5, 0]}>
+                                            <Model />
+                                            <Kuka />
+
+                                            <MovableCNCMachine />
+                                            {/* </XR> */}
+                                        </group>
+
+                                        {/* <OrbitControls /> */}
+                                    </Canvas>
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
+                </CardTitle>
                 <CardDescription>View the 3D model of the Workcell.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="aspect-square">
-                    <Canvas camera={{ position: [2, 2, 2], zoom: 100 }} orthographic>
+                <div className="aspect-[4/3] w-full">
+                    <Canvas camera={{ position: [2, 2, 2], zoom: 140 }} orthographic>
                         {/* <XR store={store} > */}
                         <ambientLight intensity={0.5} />
                         <Environment preset="city" environmentIntensity={0.5} background={false} />
-                        <group position={[-0.3, 0, 0]}>
+                        <group position={[-0.3, 0 - 0.5, 0]}>
                             <Model />
                             <Kuka />
 

@@ -52,13 +52,13 @@ export function VibrationPanel() {
         return () => socket.close()
     })
 
-    const CHART_TITLE = "Radial Chart - Shape";
-    const CHART_DESCRIPTION = "January - June 2024";
-    const TRENDING_TEXT = "Trending up by 5.2% this month";
-    const FOOTER_TEXT = "Showing total visitors for the last 6 months";
-    const VISITORS_LABEL = "Revs/min";
+    const CHART_TITLE = "Vibration Level";
+    const CHART_DESCRIPTION = "Real-time monitoring";
+    const TRENDING_TEXT = "Current vibration level";
+    const FOOTER_TEXT = "Showing machine vibration in real-time";
+    const VISITORS_LABEL = "untis";
 
-    const MAX_VALUE = 4000;
+    const MAX_VALUE = 400;
 
     return (
 

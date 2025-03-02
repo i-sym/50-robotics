@@ -28,6 +28,9 @@ import { SpindlePowerPanel } from "@/modules/spindl-power-panel/SpindlePowerPane
 import { MotorPowerPanel } from "@/modules/motor-power-panel/MotorPowerPanel";
 import { VibrationPanel } from "@/modules/vibration-panel/VibrationPanel";
 import { SpindleRpmChartPanel } from "@/modules/spindl-rpm-panel/SpindleRpmChartPanel";
+import { SpinlePowerChartPanel } from "@/modules/spindl-power-panel/SpindlePowerChartPanel";
+import { MotorPowerChartPanel } from "@/modules/motor-power-panel/MotorPowerChartPanel";
+import { ControllPanel } from "@/modules/controll-panel/ControllPanel";
 
 export function CardWithForm() {
   return (
@@ -70,18 +73,21 @@ export function CardWithForm() {
 
 export default function Home() {
   return (
-    <div className="bg-background flex items-center  justify-center  min-h-screen gap-4">
+    <div className="bg-background flex items-center justify-center  min-h-screen gap-4">
       <div className="grid gap-4 grid-cols-3">
-        <LightControlPanel />
         <VideoStreamerPanel />
+        <Machine3DView />
+        <ControllPanel />
+        <LightControlPanel />
         <SpindleRpmPanel />
         <SpindlePowerPanel />
         <MotorPowerPanel />
         <VibrationPanel />
-        <Machine3DView />
 
         <VibrationChartPanel />
         <SpindleRpmChartPanel />
+        <SpinlePowerChartPanel />
+        <MotorPowerChartPanel />
       </div>
     </div>
   );

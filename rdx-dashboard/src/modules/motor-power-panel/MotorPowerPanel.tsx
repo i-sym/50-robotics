@@ -52,11 +52,11 @@ export function MotorPowerPanel() {
         return () => socket.close()
     })
 
-    const CHART_TITLE = "Radial Chart - Shape";
-    const CHART_DESCRIPTION = "January - June 2024";
-    const TRENDING_TEXT = "Trending up by 5.2% this month";
-    const FOOTER_TEXT = "Showing total visitors for the last 6 months";
-    const VISITORS_LABEL = "Revs/min";
+    const CHART_TITLE = "Motor Load";
+    const CHART_DESCRIPTION = "Real-time monitoring";
+    const TRENDING_TEXT = "Current load status";
+    const FOOTER_TEXT = "Showing motor power consumption in real-time";
+    const VISITORS_LABEL = "Watts";
 
     const MAX_VALUE = 4000;
 

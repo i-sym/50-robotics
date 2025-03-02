@@ -52,11 +52,11 @@ export function SpindlePowerPanel() {
         return () => socket.close()
     })
 
-    const CHART_TITLE = "Radial Chart - Shape";
-    const CHART_DESCRIPTION = "January - June 2024";
-    const TRENDING_TEXT = "Trending up by 5.2% this month";
-    const FOOTER_TEXT = "Showing total visitors for the last 6 months";
-    const VISITORS_LABEL = "Revs/min";
+    const CHART_TITLE = "Spindle Power";
+    const CHART_DESCRIPTION = "Real-time monitoring";
+    const TRENDING_TEXT = "Current power consumption";
+    const FOOTER_TEXT = "Showing active spindle power consumption";
+    const VISITORS_LABEL = "Watts";
 
     const MAX_VALUE = 4000;
 

@@ -60,11 +60,11 @@ export default function LightControlPanel() {
     const handleAuto = () => setLightColor(0, 255, 0);
 
     return (
-        <Card className="w-[350px]">
-            <CardHeader>
+        <Card >
+            < CardHeader >
                 <CardTitle>Light Control</CardTitle>
                 <CardDescription>Control the lights in the Workcell.</CardDescription>
-            </CardHeader>
+            </CardHeader >
             <CardContent>
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-2">
@@ -125,6 +125,6 @@ export default function LightControlPanel() {
                     />
                 </div>
             </CardFooter>
-        </Card>
+        </Card >
     )
 }
