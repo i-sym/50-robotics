@@ -61,13 +61,14 @@ export function LiveKitProvider({ children }: { children: React.ReactNode }) {
 
     // Effect to cleanup room on unmount
     useEffect(() => {
-        return () => {
-            if (room) {
-                room.disconnect();
-                setRoom(null);
-                setIsConnected(false);
-            }
-        };
+        // TODO: return back
+        // return () => {
+        //     if (room) {
+        //         room.disconnect();
+        //         setRoom(null);
+        //         setIsConnected(false);
+        //     }
+        // };
     }, [room]);
 
     const [liveKitUrl, setLiveKitUrl] = useState(() =>

@@ -1,1 +1,0 @@
-{"version":3,"file":"descriptions.js","sourceRoot":"/","sources":["lib/descriptions.ts"],"names":[],"mappings":"","sourcesContent":["export interface Describable {\n    getDescription: () => Promise<{\n        kind: string;\n        description: {\n            [key: string]: unknown;\n        }\n    }>\n}"]}

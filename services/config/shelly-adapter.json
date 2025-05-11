@@ -1,0 +1,73 @@
+{
+    "adapter": {
+        "name": "shelly-adapter",
+        "type": "shelly",
+        "pollIntervalMs": 5000
+    },
+    "mqtt": {
+        "url": "mqtt://emqx:1883",
+        "clientId": "shelly-adapter",
+        "username": "shellyadapter",
+        "password": "shellyadapter"
+    },
+    "machines": [
+        {
+            "id": "machine-lighting",
+            "name": "Machine Lighting System",
+            "connection": {
+                "ip": "192.168.0.166:8099",
+                "type": "shelly-rgbw2"
+            },
+            "dataSources": [
+                {
+                    "id": "light-state",
+                    "name": "Light State",
+                    "endpoint": "/light/0",
+                    "valuePath": "ison",
+                    "scaleFactor": 1,
+                    "offset": 0
+                },
+                {
+                    "id": "light-brightness",
+                    "name": "Light Brightness",
+                    "endpoint": "/light/0",
+                    "valuePath": "brightness",
+                    "scaleFactor": 1,
+                    "offset": 0
+                }
+            ],
+            "controlPoints": [
+                {
+                    "id": "light-switch",
+                    "name": "Light Switch",
+                    "endpoint": "/light/0",
+                    "valueKey": "turn",
+                    "valueOn": "on",
+                    "valueOff": "off"
+                },
+                {
+                    "id": "rgb-color",
+                    "name": "RGB Color",
+                    "endpoint": "/light/0",
+                    "valueKey": "rgb"
+                },
+                {
+                    "id": "brightness",
+                    "name": "Brightness",
+                    "endpoint": "/light/0",
+                    "valueKey": "brightness",
+                    "minValue": 0,
+                    "maxValue": 100
+                },
+                {
+                    "id": "white-channel",
+                    "name": "White Channel",
+                    "endpoint": "/white/0",
+                    "valueKey": "brightness",
+                    "minValue": 0,
+                    "maxValue": 100
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,62 @@
+{
+    "adapter": {
+        "name": "five-zero-s7-protocol-adapter",
+        "pollIntervalMs": 1000,
+        "type": "s7"
+    },
+    "mqtt": {
+        "url": "mqtt://emqx:1883",
+        "clientId": "s7-adapter",
+        "username": "app",
+        "password": "app"
+    },
+    "machines": [
+        {
+            "id": "cnc-1",
+            "name": "cnc-1",
+            "connection": {
+                "ip": "192.168.0.166",
+                "rack": 0,
+                "slot": 0,
+                "localTSAP": 512,
+                "remoteTSAP": 768,
+                "timeout": 10000
+            },
+            "dataSources": [
+                {
+                    "id": "ds.spindle-power",
+                    "name": "Spindle Power",
+                    "address": "DB1,WORD1136",
+                    "dataType": "WORD",
+                    "scaleFactor": 1,
+                    "offset": 0
+                },
+                {
+                    "id": "ds.spindle-power",
+                    "name": "Spindle RPM",
+                    "address": "DB1,WORD1140",
+                    "dataType": "WORD",
+                    "scaleFactor": 1,
+                    "offset": 0
+                },
+                {
+                    "id": "ds.motor-load",
+                    "name": "Motor Load",
+                    "address": "DB1,WORD1138",
+                    "dataType": "WORD",
+                    "scaleFactor": 1,
+                    "offset": 0
+                },
+                {
+                    "id": "ds.vibration",
+                    "name": "Vibration",
+                    "address": "DB1,WORD1142",
+                    "dataType": "WORD",
+                    "scaleFactor": 1,
+                    "offset": 0
+                }
+            ],
+            "controlPoints": []
+        }
+    ]
+}
