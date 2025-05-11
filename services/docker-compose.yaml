@@ -1,0 +1,78 @@
+version: "3"
+services:
+  mqtt-broker:
+    image: emqx/emqx:latest
+    container_name: emqx
+    ports:
+      - "1883:1883"
+      - "18083:18083"
+    environment:
+      - EMQX_ALLOW_ANONYMOUS=true
+    volumes:
+      - mqtt-data:/opt/emqx/data
+    networks:
+      - five-zero-network
+
+  s7-adapter:
+    build:
+      context: ./five-zero-adapter
+      dockerfile: Dockerfile
+    container_name: s7-adapter
+    depends_on:
+      - mqtt-broker
+    environment:
+      - NODE_ENV=production
+      - CONFIG_PATH=/app/config/s7-adapter.json
+      - PORT=3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./config/s7-adapter.json:/app/config/s7-adapter.json
+    restart: unless-stopped
+    networks:
+      - five-zero-network
+
+  shelly-adapter:
+    build:
+      context: ./five-zero-adapter
+      dockerfile: Dockerfile
+    container_name: shelly-adapter
+    depends_on:
+      - mqtt-broker
+    environment:
+      - NODE_ENV=production
+      - CONFIG_PATH=/app/config/shelly-adapter.json
+      - PORT=3002
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./config/shelly-adapter.json:/app/config/shelly-adapter.json
+    restart: unless-stopped
+    networks:
+      - five-zero-network
+
+  # uccnc-adapter:
+  #   build:
+  #     context: ./five-zero-adapter
+  #     dockerfile: Dockerfile
+  #   container_name: uccnc-adapter
+  #   depends_on:
+  #     - mqtt-broker
+  #   environment:
+  #     - NODE_ENV=production
+  #     - CONFIG_PATH=/app/config/uccnc-adapter.json
+  #     - PORT=3003
+  #   ports:
+  #     - "3003:3003"
+  #   volumes:
+  #     - ./config/uccnc-adapter.json:/app/config/uccnc-adapter.json
+  #   restart: unless-stopped
+  #   networks:
+  #     - five-zero-network
+
+networks:
+  five-zero-network:
+    driver: bridge
+
+volumes:
+  mqtt-data:
