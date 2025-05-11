@@ -1,0 +1,1 @@
+{"version":3,"file":"indexable.js","sourceRoot":"/","sources":["lib/indexable.ts"],"names":[],"mappings":"","sourcesContent":["export interface Indexable {\n    readonly id: number;\n    readonly slug: string;\n}"]}
