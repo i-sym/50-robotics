@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { useWidgetData } from '@/hooks/use-widget-data';
 import { useState } from 'react';
 import { IntrusionDetectionWidget } from '../widgets/intrusion-detection-widget';
+import { Machine3DWidget } from '../widgets/machine3d-widget';
 
 type WidgetRendererProps = {
     widget: WidgetConfig;
@@ -83,6 +84,8 @@ export function WidgetRenderer({ widget, dashboardId }: WidgetRendererProps) {
                 return <TextWidget widget={widget} data={widgetData} key={refreshKey} />;
             case 'camera':
                 return <CameraWidget widget={widget} key={refreshKey} />;
+            case 'machine3d':
+                return <Machine3DWidget widget={widget} />;
             case 'intrusionDetection':
                 return <IntrusionDetectionWidget widget={widget} data={widgetData} key={refreshKey} />;
             default:

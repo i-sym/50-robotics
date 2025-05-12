@@ -2,6 +2,7 @@
 
 import mqtt, { MqttClient, IClientOptions } from 'mqtt';
 import { MQTTMessage } from '@/types/dashboard';
+import { getMqttConfig } from '@/actions/config';
 
 // Singleton pattern for MQTT client
 class MQTTClientManager {
@@ -13,12 +14,6 @@ class MQTTClientManager {
     private connected = false;
     private connecting = false;
     private reconnectTimer: NodeJS.Timeout | null = null;
-    private options: IClientOptions = {
-        clientId: 'dashboard-' + Math.random().toString(16).substr(2, 8),
-        username: process.env.NEXT_PUBLIC_MQTT_USERNAME || 'dashboarduser',
-        password: process.env.NEXT_PUBLIC_MQTT_PASSWORD || 'password',
-        reconnectPeriod: 5000,
-    };
 
     private constructor() { }
 
@@ -29,8 +24,17 @@ class MQTTClientManager {
         return MQTTClientManager.instance;
     }
 
-    public connect(brokerUrl: string = process.env.NEXT_PUBLIC_MQTT_BROKER_URL || 'ws://localhost:8083/mqtt'): void {
-        console.log('Connecting to MQTT broker:', brokerUrl, this.options);
+    public async connect(): Promise<void> {
+
+        const mqttConfig = await getMqttConfig();
+        const brokerUrl = mqttConfig.MQTT_BROKER_URL;
+        const clientId = mqttConfig.MQTT_CLIENT_ID;
+        const username = mqttConfig.MQTT_USERNAME;
+        const password = mqttConfig.MQTT_PASSWORD;
+
+
+
+        console.log('Connecting to MQTT broker:', brokerUrl, 'with client ID:', clientId);
 
         if (this.client || this.connecting) return;
 
@@ -39,7 +43,14 @@ class MQTTClientManager {
 
 
         try {
-            this.client = mqtt.connect(brokerUrl, this.options);
+            this.client = mqtt.connect(brokerUrl, {
+                clientId: `${clientId}-${Math.random().toString(16).slice(2, 8)}`,
+                username,
+                password,
+                clean: true,
+                connectTimeout: 30 * 1000,
+                reconnectPeriod: 0, // Disable automatic reconnection
+            } as IClientOptions);
 
             this.client.on('connect', () => {
                 console.log('Connected to MQTT broker');
@@ -96,7 +107,7 @@ class MQTTClientManager {
 
             // Try reconnecting after a delay
             if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
-            this.reconnectTimer = setTimeout(() => this.connect(brokerUrl), 5000);
+            this.reconnectTimer = setTimeout(() => this.connect(), 5000);
         }
     }
 

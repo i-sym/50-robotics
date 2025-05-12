@@ -106,9 +106,9 @@ The main API endpoints include:
 - `/machines/{machineId}`: Get machine details
 - `/machines/{machineId}/datasources`: List data sources for a machine
 - `/machines/{machineId}/datasources/{dataSourceId}/value`: Get data source value
-- `/machines/{machineId}/controlpoints`: List control points for a machine
-- `/machines/{machineId}/controlpoints/{controlPointId}`: Get control point state
-- `/machines/{machineId}/controlpoints/{controlPointId}/target`: Set control point target value
+- `/machines/{machineId}/controlPoints`: List control points for a machine
+- `/machines/{machineId}/controlPoints/{controlPointId}`: Get control point state
+- `/machines/{machineId}/controlPoints/{controlPointId}/target`: Set control point target value
 
 ## Data Output
 
