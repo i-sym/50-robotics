@@ -27,7 +27,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./config/s7-adapter.json:/app/config/s7-adapter.json
+      - ./config/s7-adapter-cloud.json:/app/config/s7-adapter.json
     restart: unless-stopped
     networks:
       - five-zero-network
@@ -46,7 +46,7 @@ services:
     ports:
       - "3002:3002"
     volumes:
-      - ./config/shelly-adapter.json:/app/config/shelly-adapter.json
+      - ./config/shelly-adapter-cloud.json:/app/config/shelly-adapter.json
     restart: unless-stopped
     networks:
       - five-zero-network
