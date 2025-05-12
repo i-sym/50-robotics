@@ -1,35 +1,44 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useLiveKit } from '@/context/livekit-context';
+import { useState } from 'react';
+import { useLiveKit } from '@/store/use-livekit-store';
 import { Badge } from '@/components/ui/badge';
 import { Video, VideoOff, RefreshCw } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import Link from 'next/link';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from '@/components/ui/button';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export function LiveKitStatus() {
-    const { isConnected, isConnecting, cameras, error } = useLiveKit();
-    const [showDetails, setShowDetails] = useState(false);
+    const { isConnected, isConnecting, cameras, error, connect, disconnect } = useLiveKit();
+    const [showPopover, setShowPopover] = useState(false);
 
-    // Auto-hide details after 5 seconds
-    useEffect(() => {
-        if (showDetails) {
-            const timer = setTimeout(() => {
-                setShowDetails(false);
-            }, 5000);
-            return () => clearTimeout(timer);
+    const handleConnect = async () => {
+        try {
+            // Get LIVEKIT_URL from environment or use default one
+            const liveKitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || '';
+
+            // Connect to LiveKit with default room
+            await connect({
+                url: liveKitUrl,
+                roomName: 'machine-cameras' // Default room name
+            });
+        } catch (err) {
+            console.error('Error connecting to LiveKit:', err);
         }
-    }, [showDetails]);
+    };
 
-    // If no camera widgets are used, don't show status
-    if (!isConnected && !isConnecting && !error) {
-        return null;
-    }
+    const handleDisconnect = () => {
+        disconnect();
+    };
 
     return (
         <TooltipProvider>
-            <Tooltip open={showDetails} onOpenChange={setShowDetails}>
-                <TooltipTrigger asChild>
+            <Popover open={showPopover} onOpenChange={setShowPopover}>
+                <PopoverTrigger asChild>
                     <Badge
                         variant="outline"
                         className={`
@@ -50,47 +59,61 @@ export function LiveKitStatus() {
                             {isConnecting
                                 ? 'Connecting'
                                 : isConnected
-                                    ? `Cameras (${cameras.length})`
-                                    : 'Cameras Offline'}
+                                    ? `LiveKit (${cameras.length})`
+                                    : 'LiveKit'}
                         </span>
                     </Badge>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                    <div className="text-sm p-1">
-                        {isConnected ? (
-                            <>
-                                <p className="font-medium">Connected Cameras: {cameras.length}</p>
-                                {cameras.length > 0 && (
-                                    <ul className="mt-1">
-                                        {cameras.slice(0, 3).map(camera => (
-                                            <li key={camera.id} className="text-xs">• {camera.name}</li>
-                                        ))}
-                                        {cameras.length > 3 && <li className="text-xs">• ...</li>}
-                                    </ul>
-                                )}
-                                <Link href="/cameras" className="text-xs text-primary block mt-2">
-                                    Manage Cameras
-                                </Link>
-                            </>
-                        ) : error ? (
-                            <>
-                                <p className="font-medium text-red-500">Connection Error</p>
-                                <p className="text-xs mt-1">{error.message}</p>
-                                <Link href="/cameras" className="text-xs text-primary block mt-2">
-                                    Check Camera Settings
-                                </Link>
-                            </>
-                        ) : (
-                            <>
-                                <p className="font-medium">Camera System Disconnected</p>
-                                <Link href="/cameras" className="text-xs text-primary block mt-2">
-                                    Connect to Cameras
-                                </Link>
-                            </>
+                </PopoverTrigger>
+                <PopoverContent side="bottom" className="w-64">
+                    <div className="space-y-2">
+                        <h4 className="font-medium">Camera Streaming</h4>
+                        <p className="text-sm text-muted-foreground">
+                            {isConnected
+                                ? `Connected to ${cameras.length} cameras`
+                                : "Camera system disconnected"}
+                        </p>
+
+                        {isConnected && cameras.length > 0 && (
+                            <div className="mt-1">
+                                <h5 className="text-xs font-medium">Available cameras:</h5>
+                                <ul className="text-xs text-muted-foreground">
+                                    {cameras.slice(0, 3).map(camera => (
+                                        <li key={camera.id}>• {camera.name}</li>
+                                    ))}
+                                    {cameras.length > 3 && <li>• ...</li>}
+                                </ul>
+                            </div>
                         )}
+
+                        {error && (
+                            <p className="text-xs text-red-500 mt-1">{error.message}</p>
+                        )}
+
+                        <div className="flex gap-2 mt-2">
+                            {isConnected ? (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleDisconnect}
+                                    className="w-full"
+                                >
+                                    Disconnect
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    onClick={handleConnect}
+                                    disabled={isConnecting}
+                                    className="w-full"
+                                >
+                                    {isConnecting ? "Connecting..." : "Connect"}
+                                </Button>
+                            )}
+                        </div>
                     </div>
-                </TooltipContent>
-            </Tooltip>
+                </PopoverContent>
+            </Popover>
         </TooltipProvider>
     );
 }

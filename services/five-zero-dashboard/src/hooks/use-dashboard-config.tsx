@@ -100,9 +100,9 @@ export function useMockDashboardConfig(dashboardId: string) {
                         {
                             id: 'control-1',
                             type: 'control',
-                            title: 'Machine Control',
-                            dataSource: '/machines/cnc-1/datasources/power/value',
-                            controlPoint: '/machines/cnc-1/controlPoints/power/target',
+                            title: 'Light Control',
+                            dataSource: '/machines/machine-lighting/datasources/light-state/value',
+                            controlPoint: '/machines/machine-lighting/controlPoints/light-switch/target',
                             controlType: 'toggle',
                             position: { x: 4, y: 4, width: 4, height: 4 },
                             labels: {
@@ -125,7 +125,7 @@ export function useMockDashboardConfig(dashboardId: string) {
                         {
                             "id": "intrusion-1",
                             "type": "intrusionDetection",
-                            "title": "Security Camera 1",
+                            "title": "Anomaly Detection",
                             "dataSource": "/machines/security/camera1/detection/value",
                             "showConfidence": true,
                             "highlightColor": "#ff0000",

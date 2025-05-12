@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useLiveKit } from '@/context/livekit-context';
+import { useLiveKit } from '@/store/use-livekit-store';
 import { DashboardConfig } from '@/types/dashboard';
 
 // This component connects to LiveKit when a dashboard has camera widgets
@@ -21,7 +21,7 @@ export function CameraConnectionManager({ dashboard }: { dashboard: DashboardCon
                 // Use auto-token generation by only providing URL and room name
                 connect({
                     url: liveKitUrl,
-                    roomName: 'machine-cameras' // Default room name
+                    roomName: '50robotics-cameras' // Default room name
                 }).catch(err => {
                     console.error('Failed to connect to LiveKit:', err);
                 });
@@ -29,8 +29,8 @@ export function CameraConnectionManager({ dashboard }: { dashboard: DashboardCon
                 console.error('Error setting up camera connection:', err);
             }
         }
-    }, [hasCameraWidgets, isConnected, isConnecting, connect]);
+    }, [hasCameraWidgets, connect, isConnected, isConnecting]);
 
-    // This component doesn't render anything
+    // Component doesn't render anything visible
     return null;
 }
