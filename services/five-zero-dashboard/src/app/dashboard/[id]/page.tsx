@@ -136,7 +136,7 @@ export default function DashboardPage() {
             {dashboard && <CameraConnectionManager dashboard={dashboard} />}
 
             <div className="sticky top-0 z-10 bg-background border-b p-4 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
+                {/* <div className="flex items-center gap-4">
                     <Select defaultValue="15m">
                         <SelectTrigger className="w-[140px]">
                             <Clock className="h-4 w-4 mr-2" />
@@ -186,7 +186,7 @@ export default function DashboardPage() {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Dashboard content */}
                 <DashboardGrid dashboard={dashboard} />

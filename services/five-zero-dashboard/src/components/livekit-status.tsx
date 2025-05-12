@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { getLiveKitConfig } from '@/actions/config';
 
 export function LiveKitStatus() {
     const { isConnected, isConnecting, cameras, error, connect, disconnect } = useLiveKit();
@@ -19,12 +20,11 @@ export function LiveKitStatus() {
     const handleConnect = async () => {
         try {
             // Get LIVEKIT_URL from environment or use default one
-            const liveKitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || '';
-
+            const liveKitUrl = (await getLiveKitConfig()).LIVEKIT_URL || '';
             // Connect to LiveKit with default room
             await connect({
                 url: liveKitUrl,
-                roomName: 'machine-cameras' // Default room name
+                roomName: '50robotics-cameras' // Default room name
             });
         } catch (err) {
             console.error('Error connecting to LiveKit:', err);

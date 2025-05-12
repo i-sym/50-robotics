@@ -6,6 +6,7 @@ services:
     ports:
       - "1883:1883"
       - "18083:18083"
+      - "8083:8083"
     environment:
       - EMQX_ALLOW_ANONYMOUS=true
     volumes:
@@ -47,6 +48,53 @@ services:
       - "3002:3002"
     volumes:
       - ./config/shelly-adapter.json:/app/config/shelly-adapter.json
+    restart: unless-stopped
+    networks:
+      - five-zero-network
+
+  # anomaly-detector:
+  #   build:
+  #     context: ./five-zero-anomaly-detection
+  #     dockerfile: Dockerfile
+  #   container_name: anomaly-detector
+  #   depends_on:
+  #     - mqtt-broker
+  #   environment:
+  #     - MQTT_BROKER_URL=mqtt://mqtt-broker:1883
+  #     - MQTT_CLIENT_ID=dashboard-client
+  #     - MQTT_USERNAME=dev
+  #     - MQTT_PASSWORD=dev
+  #     - LIVEKIT_URL=wss://cnc-demo-7wj97mwz.livekit.cloud
+  #     - LIVEKIT_API_KEY=APIeNJYiSJnTXTD
+  #     - LIVEKIT_API_SECRET=3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA
+  #   ports:
+  #     - "3004:3004"
+  #   volumes:
+  #     - ./config/anomaly-detector.json:/app/config/anomaly-detector.json
+  #   restart: unless-stopped
+  #   networks:
+  #     - five-zero-network
+
+  dashboard:
+    build:
+      context: ./five-zero-dashboard
+      dockerfile: Dockerfile
+    container_name: five-zero-dashboard
+    depends_on:
+      - mqtt-broker
+    environment:
+      - NODE_ENV=production
+      - MQTT_BROKER_URL=ws://localhost:8083/mqtt
+      - MQTT_CLIENT_ID=dashboard-client
+      - MQTT_USERNAME=dev
+      - MQTT_PASSWORD=dev
+      - LIVEKIT_URL=wss://cnc-demo-7wj97mwz.livekit.cloud
+      - LIVEKIT_API_KEY=APIeNJYiSJnTXTD
+      - LIVEKIT_API_SECRET=3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/dashboard.json:/app/config/dashboard.json
     restart: unless-stopped
     networks:
       - five-zero-network

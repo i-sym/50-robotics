@@ -126,12 +126,32 @@ export function useMockDashboardConfig(dashboardId: string) {
                             "id": "intrusion-1",
                             "type": "intrusionDetection",
                             "title": "Anomaly Detection",
-                            "dataSource": "/machines/security/camera1/detection/value",
+                            "dataSource": "/machines/anomaly-tracker/reading/detected-objects",
                             "showConfidence": true,
                             "highlightColor": "#ff0000",
                             "showLabels": true,
                             "maxDetections": 10,
                             "position": { "x": 4, "y": 8, "width": 4, "height": 8 },
+                        },
+                        {
+                            "id": "machine-3d",
+                            "type": "machine3d",
+                            "title": "CNC Machine Position",
+                            "position": {
+                                "x": 8,
+                                "y": 8,
+                                "width": 4,
+                                "height": 6
+                            },
+                            "mqttTopic": "machine/position",
+                            "showGrid": true,
+                            "showAxes": true,
+                            "cameraPosition": {
+                                "x": 5,
+                                "y": 5,
+                                "z": 5
+                            },
+                            "initialRotation": 0
                         }
                     ]
                 });

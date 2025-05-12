@@ -11,6 +11,7 @@ import {
 } from 'livekit-client';
 import { LiveKitConfig, CameraStreamInfo } from '@/types/livekit';
 import { generateLiveKitToken } from '@/lib/livekit-token';
+import { getLiveKitConfig } from '@/actions/config';
 
 interface LiveKitStore {
     // State
@@ -32,12 +33,12 @@ interface LiveKitStore {
 const loadSavedSettings = () => {
     if (typeof window !== 'undefined') {
         return {
-            liveKitUrl: localStorage.getItem('liveKitUrl') || process.env.NEXT_PUBLIC_LIVEKIT_URL || '',
+            liveKitUrl: localStorage.getItem('liveKitUrl') || '',
             roomName: localStorage.getItem('liveKitRoom') || '50robotics-cameras'
         };
     }
     return {
-        liveKitUrl: process.env.NEXT_PUBLIC_LIVEKIT_URL || '',
+        liveKitUrl: '',
         roomName: '50robotics-cameras'
     };
 };

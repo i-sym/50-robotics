@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useLiveKit } from '@/store/use-livekit-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,28 +10,38 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CameraWidgetConfig } from '@/types/dashboard';
 import { CameraWidget } from '@/components/widgets/camera-widget';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getLiveKitConfig } from '@/actions/config';
+import { Badge } from '@/components/ui/badge';
 
 export default function CamerasPage() {
     const { room, isConnected, isConnecting, error, cameras, connect, disconnect } = useLiveKit();
     const [selectedCamera, setSelectedCamera] = useState<string | null>(null);
-    const [liveKitUrl, setLiveKitUrl] = useState(() =>
-        typeof window !== 'undefined'
-            ? localStorage.getItem('liveKitUrl') || process.env.NEXT_PUBLIC_LIVEKIT_URL || ''
-            : process.env.NEXT_PUBLIC_LIVEKIT_URL || ''
-    );
+    const [liveKitUrl, setLiveKitUrl] = useState<string | null>();
+
     const [roomName, setRoomName] = useState(() =>
         typeof window !== 'undefined'
-            ? localStorage.getItem('liveKitRoom') || 'machine-cameras'
-            : 'machine-cameras'
+            ? localStorage.getItem('liveKitRoom') || '50robotics-cameras'
+            : '50robotics-cameras'
     );
 
-    // Save LiveKit settings to localStorage
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('liveKitUrl', liveKitUrl);
-            localStorage.setItem('liveKitRoom', roomName);
-        }
-    }, [liveKitUrl, roomName]);
+        getLiveKitConfig()
+            .then((config) => {
+                setLiveKitUrl(config.LIVEKIT_URL);
+            }
+            )
+            .catch((error) => {
+                console.error('Error fetching LiveKit config:', error);
+            });
+    }, []);
+
+    // Save LiveKit settings to localStorage
+    // useEffect(() => {
+    //     if (typeof window !== 'undefined') {
+    //         localStorage.setItem('liveKitUrl', liveKitUrl);
+    //         localStorage.setItem('liveKitRoom', roomName);
+    //     }
+    // }, [liveKitUrl, roomName]);
 
     // Handle connect button
     const handleConnect = async () => {
@@ -66,7 +76,7 @@ export default function CamerasPage() {
     });
 
     return (
-        <div className="container mx-auto py-6 space-y-6">
+        <div className="container mx-auto py-6 px-4 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Camera Streaming</h1>
                 <div>
@@ -137,7 +147,7 @@ export default function CamerasPage() {
                                     <Card
                                         key={camera.id}
                                         className={`cursor-pointer transition ${selectedCamera === camera.id ?
-                                                'ring-2 ring-primary' : 'hover:bg-accent/50'
+                                            'ring-2 ring-primary' : 'hover:bg-accent/50'
                                             }`}
                                         onClick={() => setSelectedCamera(
                                             selectedCamera === camera.id ? null : camera.id
@@ -185,12 +195,9 @@ export default function CamerasPage() {
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">LiveKit URL</label>
-                                <Input
-                                    value={liveKitUrl}
-                                    onChange={(e) => setLiveKitUrl(e.target.value)}
-                                    placeholder="wss://your-livekit-server.com"
-                                    disabled={isConnected || isConnecting}
-                                />
+                                <Badge variant={'outline'} className="font-mono">
+                                    {liveKitUrl || 'Loading...'}
+                                </Badge>
                             </div>
 
                             <div className="space-y-2">
