@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { IntrusionDetectionWidgetConfig, WidgetData, IntrusionData } from '@/types/dashboard';
 import { useWidgetData } from '@/hooks/use-widget-data';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, EyeOffIcon, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type IntrusionDetectionWidgetProps = {
@@ -24,6 +24,8 @@ export function IntrusionDetectionWidget({ widget, data }: IntrusionDetectionWid
     const imageRef = useRef<HTMLImageElement | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [dataReady, setDataReady] = useState(false);
 
     // Extract configuration options
     const {
@@ -96,6 +98,8 @@ export function IntrusionDetectionWidget({ widget, data }: IntrusionDetectionWid
             // Store image reference
             imageRef.current = img;
 
+            setDataReady(true);
+
         } catch (err) {
             console.error('Error processing intrusion detection data:', err);
             setError(err instanceof Error ? err.message : 'Unknown error');
@@ -130,13 +134,14 @@ export function IntrusionDetectionWidget({ widget, data }: IntrusionDetectionWid
 
         // Draw bounding boxes
         intrusions.forEach(intrusion => {
-            const [x1, y1, x2, y2] = intrusion.box;
+            console.log('Drawing intrusion:', intrusion);
+            const [x1, y1, width, height] = intrusion.box;
 
             // Convert normalized coordinates to pixel coordinates
             const boxX = x1 * imgWidth;
             const boxY = y1 * imgHeight;
-            const boxWidth = (x2 - x1) * imgWidth;
-            const boxHeight = (y2 - y1) * imgHeight;
+            const boxWidth = width * imgWidth;
+            const boxHeight = height * imgHeight;
 
             // Draw bounding box
             ctx.lineWidth = Math.max(2, imgWidth / 100); // Scale line width based on image size
@@ -152,7 +157,7 @@ export function IntrusionDetectionWidget({ widget, data }: IntrusionDetectionWid
                 const labelHeight = fontSize + 10;
 
                 ctx.fillStyle = `${highlightColor}B3`; // Add 70% opacity
-                ctx.fillRect(boxX, boxY - labelHeight, labelWidth, labelHeight);
+                ctx.fillRect(boxY, boxX - labelHeight, labelWidth, labelHeight);
 
                 // Draw label text
                 ctx.fillStyle = '#ffffff';
@@ -222,6 +227,14 @@ export function IntrusionDetectionWidget({ widget, data }: IntrusionDetectionWid
     return (
         <div className="h-full w-full flex flex-col">
             <div className="relative flex-1 overflow-hidden">
+
+                {dataReady === false && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted/20 flex-col">
+                        <EyeOffIcon className="h-10 w-10 text-muted-foreground mb-2" />
+                        <p className="text-sm text-muted-foreground">No data from AI model yet</p>
+                    </div>
+                )}
+
                 {/* Canvas for displaying image and annotations */}
                 <canvas
                     ref={canvasRef}

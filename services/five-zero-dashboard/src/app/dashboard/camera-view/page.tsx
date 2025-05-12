@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useLiveKit } from '@/context/livekit-context';
+import { use, useEffect, useState } from 'react';
+import { useLiveKit } from '@/store/use-livekit-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,51 +10,38 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CameraWidgetConfig } from '@/types/dashboard';
 import { CameraWidget } from '@/components/widgets/camera-widget';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getLiveKitConfig } from '@/actions/config';
+import { Badge } from '@/components/ui/badge';
 
 export default function CamerasPage() {
     const { room, isConnected, isConnecting, error, cameras, connect, disconnect } = useLiveKit();
     const [selectedCamera, setSelectedCamera] = useState<string | null>(null);
-    const [liveKitUrl, setLiveKitUrl] = useState(() =>
-        typeof window !== 'undefined'
-            ? localStorage.getItem('liveKitUrl') || process.env.NEXT_PUBLIC_LIVEKIT_URL || ''
-            : process.env.NEXT_PUBLIC_LIVEKIT_URL || ''
-    );
+    const [liveKitUrl, setLiveKitUrl] = useState<string | null>();
+
     const [roomName, setRoomName] = useState(() =>
         typeof window !== 'undefined'
-            ? localStorage.getItem('liveKitRoom') || 'machine-cameras'
-            : 'machine-cameras'
+            ? localStorage.getItem('liveKitRoom') || '50robotics-cameras'
+            : '50robotics-cameras'
     );
 
-    // Save LiveKit settings to localStorage
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('liveKitUrl', liveKitUrl);
-            localStorage.setItem('liveKitRoom', roomName);
-        }
-    }, [liveKitUrl, roomName]);
-    const [liveKitToken, setLiveKitToken] = useState(() =>
-        typeof window !== 'undefined'
-            ? localStorage.getItem('liveKitToken') || ''
-            : ''
-    );
-
-    // Save LiveKit settings to localStorage
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('liveKitUrl', liveKitUrl);
-            localStorage.setItem('liveKitToken', liveKitToken);
-            localStorage.setItem('liveKitRoom', roomName);
-        }
-    }, [liveKitUrl, liveKitToken, roomName]);
-
-    // Auto-connect on page load if we have settings
-    useEffect(() => {
-        if (liveKitUrl && liveKitToken && roomName && !isConnected && !isConnecting) {
-            handleConnect();
-        }
+        getLiveKitConfig()
+            .then((config) => {
+                setLiveKitUrl(config.LIVEKIT_URL);
+            }
+            )
+            .catch((error) => {
+                console.error('Error fetching LiveKit config:', error);
+            });
     }, []);
 
-    // Handle connect button
+    // Save LiveKit settings to localStorage
+    // useEffect(() => {
+    //     if (typeof window !== 'undefined') {
+    //         localStorage.setItem('liveKitUrl', liveKitUrl);
+    //         localStorage.setItem('liveKitRoom', roomName);
+    //     }
+    // }, [liveKitUrl, roomName]);
 
     // Handle connect button
     const handleConnect = async () => {
@@ -70,150 +57,133 @@ export default function CamerasPage() {
         }
     };
 
-    // Select the first camera when cameras list changes
-    useEffect(() => {
-        if (cameras.length > 0 && !selectedCamera) {
-            setSelectedCamera(cameras[0].name);
-        }
-    }, [cameras, selectedCamera]);
+    // Handle disconnect button
+    const handleDisconnect = () => {
+        disconnect();
+        setSelectedCamera(null);
+    };
 
-    // Create a camera widget config for the selected camera
-    const createCameraWidgetConfig = (cameraName: string): CameraWidgetConfig => ({
+    // Create a mock camera widget config
+    const createCameraWidget = (cameraName: string): CameraWidgetConfig => ({
         id: `camera-${cameraName}`,
         type: 'camera',
         title: cameraName,
-        cameraName,
-        position: { x: 0, y: 0, width: 6, height: 4 },
+        position: { x: 0, y: 0, width: 2, height: 2 },
+        cameraName: cameraName,
         showControls: true,
         autoPlay: true,
         muted: false
     });
 
-    // Generate grid columns based on camera count
-    const getGridColumns = () => {
-        if (cameras.length <= 2) return 'grid-cols-1 md:grid-cols-1';
-        if (cameras.length <= 4) return 'grid-cols-1 md:grid-cols-2';
-        return 'grid-cols-1 md:grid-cols-3';
-    };
-
     return (
-        <div className="container mx-auto py-6">
-            <h1 className="text-2xl font-bold mb-6">Machine Cameras</h1>
+        <div className="container mx-auto py-6 px-4 space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold">Camera Streaming</h1>
+                <div>
+                    {isConnected ? (
+                        <Button
+                            variant="outline"
+                            onClick={handleDisconnect}
+                        >
+                            <X className="h-4 w-4 mr-2" />
+                            Disconnect
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="outline"
+                            onClick={handleConnect}
+                            disabled={isConnecting || !liveKitUrl || !roomName}
+                        >
+                            {isConnecting ? (
+                                <>
+                                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                    Connecting...
+                                </>
+                            ) : (
+                                <>
+                                    <Video className="h-4 w-4 mr-2" />
+                                    Connect
+                                </>
+                            )}
+                        </Button>
+                    )}
+                </div>
+            </div>
 
-            <Tabs defaultValue="cameras" className="w-full">
-                <TabsList className="mb-4">
-                    <TabsTrigger value="cameras">Camera Feeds</TabsTrigger>
+            <Tabs defaultValue={isConnected ? "cameras" : "settings"} className="space-y-4">
+                <TabsList>
+                    <TabsTrigger value="cameras">Cameras</TabsTrigger>
                     <TabsTrigger value="settings">Connection Settings</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="cameras">
-                    {/* Connection status */}
-                    <div className="flex items-center justify-between mb-4 p-4 bg-card rounded-lg border">
-                        <div className="flex items-center">
-                            <div className={`w-3 h-3 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                            <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
-                            {isConnecting && <RefreshCw className="ml-2 h-4 w-4 animate-spin" />}
-                        </div>
-
-                        <div className="flex gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleConnect}
-                                disabled={isConnecting || isConnected}
-                            >
-                                Connect
+                <TabsContent value="cameras" className="space-y-4">
+                    {!isConnected && (
+                        <div className="rounded-lg border bg-card p-10 text-center">
+                            <CameraOff className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
+                            <h3 className="text-lg font-medium mb-2">Not connected to camera system</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Please connect to the LiveKit server to view available cameras.
+                            </p>
+                            <Button onClick={handleConnect} disabled={isConnecting || !liveKitUrl || !roomName}>
+                                {isConnecting ? "Connecting..." : "Connect"}
                             </Button>
-
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={disconnect}
-                                disabled={isConnecting || !isConnected}
-                            >
-                                Disconnect
-                            </Button>
-                        </div>
-                    </div>
-
-                    {error && (
-                        <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive">
-                            {error.message}
                         </div>
                     )}
 
                     {isConnected && cameras.length === 0 && (
-                        <div className="flex flex-col items-center justify-center h-64 bg-muted/20 rounded-lg">
-                            <CameraOff className="h-12 w-12 text-muted-foreground mb-2" />
-                            <p className="text-muted-foreground">No cameras found in room</p>
+                        <div className="rounded-lg border bg-card p-10 text-center">
+                            <CameraOff className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
+                            <h3 className="text-lg font-medium mb-2">No cameras available</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Connected to LiveKit, but no camera streams were found.
+                            </p>
                         </div>
                     )}
 
                     {isConnected && cameras.length > 0 && (
                         <>
-                            {/* Camera selector tabs */}
-                            <div className="flex flex-wrap gap-2 mb-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {cameras.map(camera => (
-                                    <Button
+                                    <Card
                                         key={camera.id}
-                                        variant={selectedCamera === camera.name ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => setSelectedCamera(camera.name)}
+                                        className={`cursor-pointer transition ${selectedCamera === camera.id ?
+                                            'ring-2 ring-primary' : 'hover:bg-accent/50'
+                                            }`}
+                                        onClick={() => setSelectedCamera(
+                                            selectedCamera === camera.id ? null : camera.id
+                                        )}
                                     >
-                                        <Video className="h-4 w-4 mr-2" />
-                                        {camera.name}
-                                    </Button>
-                                ))}
-                            </div>
-
-                            {/* Selected camera view */}
-                            {selectedCamera && (
-                                <div className="mb-8 aspect-video bg-black rounded-lg overflow-hidden">
-                                    <CameraWidget widget={createCameraWidgetConfig(selectedCamera)} />
-                                </div>
-                            )}
-
-                            {/* All cameras grid */}
-                            <h2 className="text-lg font-semibold mb-4">All Cameras</h2>
-                            <div className={`grid grid-cols-3 gap-4`}>
-                                {cameras.map(camera => (
-                                    <Card key={camera.id} className="overflow-hidden">
-                                        <CardHeader className="p-4">
-                                            <CardTitle className="text-base flex items-center justify-between">
-                                                <span>{camera.name}</span>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7"
-                                                    onClick={() => setSelectedCamera(camera.name)}
-                                                >
-                                                    <Video className="h-4 w-4" />
-                                                </Button>
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="p-0 aspect-video bg-black">
-                                            <CameraWidget
-                                                widget={{
-                                                    ...createCameraWidgetConfig(camera.name),
-                                                    showControls: false,
-                                                    muted: true
-                                                }}
-                                            />
+                                        <CardContent className="p-4">
+                                            <div className="aspect-video bg-muted mb-2 rounded relative">
+                                                <CameraWidget
+                                                    widget={createCameraWidget(camera.name)}
+                                                />
+                                            </div>
+                                            <h3 className="font-medium text-sm">{camera.name}</h3>
                                         </CardContent>
                                     </Card>
                                 ))}
                             </div>
-                        </>
-                    )}
 
-                    {/* Loading state */}
-                    {isConnecting && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Skeleton className="aspect-video rounded-lg" />
-                            <Skeleton className="aspect-video rounded-lg" />
-                            <Skeleton className="aspect-video rounded-lg" />
-                            <Skeleton className="aspect-video rounded-lg" />
-                        </div>
+                            {selectedCamera && (
+                                <Card className="mt-6">
+                                    <CardHeader>
+                                        <CardTitle>
+                                            {cameras.find(c => c.id === selectedCamera)?.name || 'Camera View'}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="aspect-video bg-muted rounded">
+                                            <CameraWidget
+                                                widget={createCameraWidget(
+                                                    cameras.find(c => c.id === selectedCamera)?.name || ''
+                                                )}
+                                            />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </>
                     )}
                 </TabsContent>
 
@@ -224,13 +194,10 @@ export default function CamerasPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">LiveKit Server URL</label>
-                                <Input
-                                    value={liveKitUrl}
-                                    onChange={(e) => setLiveKitUrl(e.target.value)}
-                                    placeholder="wss://your-livekit-server.com"
-                                    disabled={isConnected || isConnecting}
-                                />
+                                <label className="text-sm font-medium">LiveKit URL</label>
+                                <Badge variant={'outline'} className="font-mono">
+                                    {liveKitUrl || 'Loading...'}
+                                </Badge>
                             </div>
 
                             <div className="space-y-2">

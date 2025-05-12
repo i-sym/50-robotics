@@ -96,6 +96,19 @@ export type IntrusionDetectionWidgetConfig = BaseWidgetConfig & {
     maxDetections?: number;
 };
 
+export type Machine3DWidgetConfig = BaseWidgetConfig & {
+    type: 'machine3d';
+    mqttTopic: string; // MQTT topic for machine position
+    showAxes?: boolean;
+    showGrid?: boolean;
+    cameraPosition?: {
+        x: number;
+        y: number;
+        z: number;
+    };
+    initialRotation?: number;
+};
+
 export type WidgetConfig =
     | GaugeWidgetConfig
     | ChartWidgetConfig
@@ -103,7 +116,9 @@ export type WidgetConfig =
     | ControlWidgetConfig
     | TextWidgetConfig
     | CameraWidgetConfig
-    | IntrusionDetectionWidgetConfig;
+    | IntrusionDetectionWidgetConfig
+    | Machine3DWidgetConfig;
+
 export type DashboardLayout = {
     columns: number;
     rowHeight: number;

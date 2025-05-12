@@ -100,9 +100,9 @@ export function useMockDashboardConfig(dashboardId: string) {
                         {
                             id: 'control-1',
                             type: 'control',
-                            title: 'Machine Control',
-                            dataSource: '/machines/cnc-1/datasources/power/value',
-                            controlPoint: '/machines/cnc-1/controlPoints/power/target',
+                            title: 'Light Control',
+                            dataSource: '/machines/machine-lighting/datasources/light-state/value',
+                            controlPoint: '/machines/machine-lighting/controlPoints/light-switch/target',
                             controlType: 'toggle',
                             position: { x: 4, y: 4, width: 4, height: 4 },
                             labels: {
@@ -125,13 +125,33 @@ export function useMockDashboardConfig(dashboardId: string) {
                         {
                             "id": "intrusion-1",
                             "type": "intrusionDetection",
-                            "title": "Security Camera 1",
-                            "dataSource": "/machines/security/camera1/detection/value",
+                            "title": "Anomaly Detection",
+                            "dataSource": "/machines/anomaly-tracker/reading/detected-objects",
                             "showConfidence": true,
                             "highlightColor": "#ff0000",
                             "showLabels": true,
                             "maxDetections": 10,
                             "position": { "x": 4, "y": 8, "width": 4, "height": 8 },
+                        },
+                        {
+                            "id": "machine-3d",
+                            "type": "machine3d",
+                            "title": "CNC Machine Position",
+                            "position": {
+                                "x": 8,
+                                "y": 8,
+                                "width": 4,
+                                "height": 6
+                            },
+                            "mqttTopic": "machine/position",
+                            "showGrid": true,
+                            "showAxes": true,
+                            "cameraPosition": {
+                                "x": 5,
+                                "y": 5,
+                                "z": 5
+                            },
+                            "initialRotation": 0
                         }
                     ]
                 });

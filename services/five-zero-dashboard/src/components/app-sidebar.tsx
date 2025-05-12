@@ -14,6 +14,9 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { LiveKitStatus } from "@/components/livekit-status"
+import { MQTTStatus } from "@/components/mqtt-status"
+import Link from "next/link"
 
 // This is sample data.
 const data = {
@@ -51,7 +54,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar {...props}>
       <SidebarHeader>
         <h1 className="px-2 py-4 font-mono font-bold">5.0 Robotics</h1>
-        <SearchForm />
+        {/* indicators */}
+        <div className="px-2 py-1 flex items-center gap-2">
+          <MQTTStatus />
+          <LiveKitStatus />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
@@ -63,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={false}>
-                      <a href={item.url}>{item.title}</a>
+                      <Link href={item.url}>{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
