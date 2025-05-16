@@ -5,10 +5,10 @@
         "pollIntervalMs": 5000
     },
     "mqtt": {
-        "url": "mqtt://emqx:1883",
+        "url": "mqtts://w6a455d1.ala.eu-central-1.emqxsl.com:8883",
         "clientId": "shelly-adapter",
-        "username": "shellyadapter",
-        "password": "shellyadapter"
+        "username": "app",
+        "password": "app"
     },
     "machines": [
         {

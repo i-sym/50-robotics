@@ -93,8 +93,8 @@ services:
       - LIVEKIT_API_SECRET=3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA
     ports:
       - "3000:3000"
-    volumes:
-      - ./config/dashboard.json:/app/config/dashboard.json
+    # volumes:
+    #   - ./config/dashboard.json:/app/config/dashboard.json
     restart: unless-stopped
     networks:
       - five-zero-network

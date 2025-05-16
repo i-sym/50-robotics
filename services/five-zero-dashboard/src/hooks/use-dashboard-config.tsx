@@ -15,7 +15,7 @@ const fetcher = async (url: string) => {
 
 export function useDashboardConfig(dashboardId: string) {
     const { data, error, isLoading, mutate } = useSWR<DashboardConfig>(
-        `${API_BASE_URL}/dashboards/${dashboardId}`,
+        `/config/dashboard.json`,
         fetcher
     );
 

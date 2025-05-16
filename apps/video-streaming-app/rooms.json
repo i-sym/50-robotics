@@ -1,0 +1,8 @@
+{
+  "rooms": [
+    {
+      "name": "50robotics-cameras",
+      "url": "wss://cnc-demo-7wj97mwz.livekit.cloud"
+    }
+  ]
+}

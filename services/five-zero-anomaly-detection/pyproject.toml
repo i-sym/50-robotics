@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "workspace-monitor"
 version = "0.1.0"
 description = "Tool to monitor a LiveKit video stream for objects of interest and publish the detections to an MQTT broker"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "dotenv>=0.9.9",
     "livekit>=1.0.2",
