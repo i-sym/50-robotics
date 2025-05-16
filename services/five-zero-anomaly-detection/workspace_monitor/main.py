@@ -5,7 +5,7 @@ import tyro
 from dotenv import load_dotenv
 from rich.logging import RichHandler
 
-from workspace_monitor.config import Config, LiveKitConfig, MqttConfig, MonitorConfig
+from workspace_monitor.config import Config
 from workspace_monitor.video_stream.livekit_video_stream import LiveKitVideoStream
 from workspace_monitor.workers.workspace_state_publisher import (
     WorkspaceStatePublisher,
@@ -26,6 +26,8 @@ def main(cfg: Config):
         identity=cfg.livekit.identity,
         room_name=cfg.livekit.room_name,
         track_name=cfg.livekit.track_name,
+        api_key=cfg.livekit.api_key,
+        api_secret=cfg.livekit.api_secret,
         timeout=5,
     )
     streamer.start()
@@ -50,12 +52,17 @@ def main(cfg: Config):
             break
 
         # process the frame
-        workspace_state = monitor.process(frame)
+        try:
+            workspace_state = monitor.process(frame)
+        except RuntimeError as e:
+            # there's a rare exception when torch fails to process YOLOv7 model output - just try again with the next frame
+            log.error(f"Error processing frame: {e}")
+            continue
+
         if len(workspace_state.intrusions) <= 0:
             log.info("Processed workspace state: no intrusions")
         else:
-            intrusion_names = [
-                i.class_name for i in workspace_state.intrusions]
+            intrusion_names = [i.class_name for i in workspace_state.intrusions]
             log.info(
                 f"Processed workspace state: {len(workspace_state.intrusions)} intrusions\n"
                 f"  {intrusion_names}"
@@ -80,41 +87,9 @@ def cli():
 
     load_dotenv()
 
-    # cfg = tyro.cli(Config)
+    default_cfg = Config()  # pyright: ignore [reportCallIssue]
 
-    """
-    MQTT_BROKER_URL=ws://localhost:8083/mqtt
-    MQTT_CLIENT_ID=dashboard-client
-    MQTT_USERNAME=dev
-    MQTT_PASSWORD=dev
-
-    LIVEKIT_URL=wss://cnc-demo-7wj97mwz.livekit.cloud
-    LIVEKIT_API_KEY=APIeNJYiSJnTXTD
-    LIVEKIT_API_SECRET=3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA
-
-    """
-
-    cfg = Config(
-        debug=True,
-        livekit=LiveKitConfig(
-            url="wss://cnc-demo-7wj97mwz.livekit.cloud",
-            identity="camera-1-50robotics-cameras",
-            room_name="50robotics-cameras",
-            track_name="camera-1-50robotics-cameras",
-            api_key="APIeNJYiSJnTXTD",
-            api_secret="3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA",
-        ),
-        mqtt=MqttConfig(
-            broker="localhost",
-            port=1883,
-            topic="/machines/anomaly-tracker/reading/detected-objects",
-            username="example_user",
-            password="example_password",
-        ),
-        monitor=MonitorConfig(
-            tracked_objects=["person"]
-        ),
-    )
+    cfg = tyro.cli(Config, default=default_cfg)
 
     main(cfg)
 
