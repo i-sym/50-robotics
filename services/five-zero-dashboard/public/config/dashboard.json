@@ -1,0 +1,139 @@
+{
+    "id": "demo",
+    "name": "Demo Dashboard",
+    "layout": {
+      "columns": 12,
+      "rowHeight": 50
+    },
+    "widgets": [
+      {
+        "id": "gauge-1",
+        "type": "gauge",
+        "title": "Spindle Rpm",
+        "dataSource": "/machines/cnc-1/datasources/ds.spindle-power/value",
+        "minValue": 0,
+        "maxValue": 4000,
+        "units": "RPM",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "width": 4,
+          "height": 4
+        },
+        "thresholds": [
+          {
+            "value": 50,
+            "color": "#22c55e"
+          },
+          {
+            "value": 80,
+            "color": "#f59e0b"
+          },
+          {
+            "value": 90,
+            "color": "#ef4444"
+          }
+        ]
+      },
+      {
+        "id": "chart-1",
+        "type": "lineChart",
+        "title": "Vibration Data",
+        "dataSource": "/machines/cnc-1/datasources/ds.vibration/value",
+        "timeRange": "15m",
+        "units": "",
+        "position": {
+          "x": 4,
+          "y": 0,
+          "width": 8,
+          "height": 4
+        }
+      },
+      {
+        "id": "camera-1",
+        "type": "camera",
+        "title": "Main Camera",
+        "cameraName": "camera-1-50robotics-cameras",
+        "position": {
+          "x": 0,
+          "y": 4,
+          "width": 4,
+          "height": 8
+        },
+        "showControls": true,
+        "autoPlay": true,
+        "muted": false
+      },
+      {
+        "id": "control-1",
+        "type": "control",
+        "title": "Light Control",
+        "dataSource": "/machines/machine-lighting/datasources/light-state/value",
+        "controlPoint": "/machines/machine-lighting/controlPoints/light-switch/target",
+        "controlType": "toggle",
+        "position": {
+          "x": 4,
+          "y": 4,
+          "width": 4,
+          "height": 4
+        },
+        "labels": {
+          "true": "ON",
+          "false": "OFF"
+        },
+        "confirmationRequired": true,
+        "confirmationMessage": "Are you sure you want to change machine power state?"
+      },
+      {
+        "id": "text-1",
+        "type": "text",
+        "title": "Spindle Power",
+        "dataSource": "/machines/cnc-1/datasources/ds.spindle-power/value",
+        "position": {
+          "x": 8,
+          "y": 4,
+          "width": 4,
+          "height": 4
+        },
+        "units": "W",
+        "prefix": "Power: ",
+        "decimalPlaces": 0
+      },
+      {
+        "id": "intrusion-1",
+        "type": "intrusionDetection",
+        "title": "Anomaly Detection",
+        "dataSource": "/machines/anomaly-tracker/reading/detected-objects",
+        "showConfidence": true,
+        "highlightColor": "#ff0000",
+        "showLabels": true,
+        "maxDetections": 10,
+        "position": {
+          "x": 4,
+          "y": 8,
+          "width": 4,
+          "height": 8
+        }
+      },
+      {
+        "id": "machine-3d",
+        "type": "machine3d",
+        "title": "CNC Machine Position",
+        "position": {
+          "x": 8,
+          "y": 8,
+          "width": 4,
+          "height": 6
+        },
+        "mqttTopic": "machine/position",
+        "showGrid": true,
+        "showAxes": true,
+        "cameraPosition": {
+          "x": 5,
+          "y": 5,
+          "z": 5
+        },
+        "initialRotation": 0
+      }
+    ]
+  }

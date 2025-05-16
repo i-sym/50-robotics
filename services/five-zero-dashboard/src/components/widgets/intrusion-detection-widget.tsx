@@ -239,17 +239,11 @@ export function IntrusionDetectionWidget({ widget, data }: IntrusionDetectionWid
                 <canvas
                     ref={canvasRef}
                     className={cn(
-                        "w-full h-full object-contain",
-                        { "opacity-50": loading }
-                    )}
+                        "w-full h-full object-contain"                    )}
                 />
 
                 {/* Loading overlay */}
-                {loading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/30">
-                        <RefreshCw className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                )}
+                
             </div>
 
             {/* Timestamp footer */}

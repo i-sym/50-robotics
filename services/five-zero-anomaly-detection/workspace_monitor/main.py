@@ -98,8 +98,8 @@ def cli():
         debug=True,
         livekit=LiveKitConfig(
             url="wss://cnc-demo-7wj97mwz.livekit.cloud",
-            identity="monitor",
-            room_name="demo",
+            identity="camera-1-50robotics-cameras",
+            room_name="50robotics-cameras",
             track_name="camera-1-50robotics-cameras",
             api_key="APIeNJYiSJnTXTD",
             api_secret="3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA",
@@ -112,9 +112,7 @@ def cli():
             password="example_password",
         ),
         monitor=MonitorConfig(
-            tracked_objects=["person"],
-            min_confidence=0.5,
-            max_distance=2.0,
+            tracked_objects=["person"]
         ),
     )
 
