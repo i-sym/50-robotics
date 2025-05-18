@@ -39,7 +39,7 @@ class Config(BaseSettings):
 
     class Config:  # <- pydantic's BaseSettings configuration
         env_file = ".env"
-        env_nested_delimiter = "."
+        env_nested_delimiter = "__"
 
     livekit: LiveKitConfig
     mqtt: MqttConfig

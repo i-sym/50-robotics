@@ -1,9 +1,11 @@
 import logging
 
+import os
 import cv2
 import tyro
 from dotenv import load_dotenv
 from rich.logging import RichHandler
+from rich import print
 
 from workspace_monitor.config import Config
 from workspace_monitor.video_stream.livekit_video_stream import LiveKitVideoStream
@@ -86,6 +88,8 @@ def cli():
     )
 
     load_dotenv()
+
+    print(os.environ)
 
     default_cfg = Config()  # pyright: ignore [reportCallIssue]
 

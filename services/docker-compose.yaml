@@ -1,4 +1,3 @@
-version: "3"
 services:
   mqtt-broker:
     image: emqx/emqx:latest
@@ -52,28 +51,29 @@ services:
     networks:
       - five-zero-network
 
-  # anomaly-detector:
-  #   build:
-  #     context: ./five-zero-anomaly-detection
-  #     dockerfile: Dockerfile
-  #   container_name: anomaly-detector
-  #   depends_on:
-  #     - mqtt-broker
-  #   environment:
-  #     - MQTT_BROKER_URL=mqtt://mqtt-broker:1883
-  #     - MQTT_CLIENT_ID=dashboard-client
-  #     - MQTT_USERNAME=dev
-  #     - MQTT_PASSWORD=dev
-  #     - LIVEKIT_URL=wss://cnc-demo-7wj97mwz.livekit.cloud
-  #     - LIVEKIT_API_KEY=APIeNJYiSJnTXTD
-  #     - LIVEKIT_API_SECRET=3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA
-  #   ports:
-  #     - "3004:3004"
-  #   volumes:
-  #     - ./config/anomaly-detector.json:/app/config/anomaly-detector.json
-  #   restart: unless-stopped
-  #   networks:
-  #     - five-zero-network
+  anomaly-detector:
+    image: 5.0-robotics/workspace-monitor
+    build:
+      context: ./five-zero-anomaly-detection
+      dockerfile: Dockerfile
+    container_name: anomaly-detector
+    depends_on:
+      - mqtt-broker
+    deploy:
+      resources:
+        reservations:
+          cpus: '5'
+          memory: 2G
+    env_file: './five-zero-anomaly-detection/.env'
+    ports:
+      - "3004:3004"
+    volumes:
+      - ./config/anomaly-detector.json:/app/config/anomaly-detector.json
+    restart: unless-stopped
+    networks:
+      - five-zero-network
+    profiles:
+      - prod
 
   dashboard:
     build:
@@ -88,9 +88,19 @@ services:
       - MQTT_CLIENT_ID=dashboard-client
       - MQTT_USERNAME=dev
       - MQTT_PASSWORD=dev
-      - LIVEKIT_URL=wss://cnc-demo-7wj97mwz.livekit.cloud
-      - LIVEKIT_API_KEY=APIeNJYiSJnTXTD
-      - LIVEKIT_API_SECRET=3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA
+
+      # For Cloud LiveKit setup
+      # - LIVEKIT_URL=wss://cnc-demo-7wj97mwz.livekit.cloud
+      # - LIVEKIT_BACKEND_URL=wss://cnc-demo-7wj97mwz.livekit.cloud
+      # - LIVEKIT_API_KEY=APIeNJYiSJnTXTD
+      # - LIVEKIT_API_SECRET=3kTnOeRPRfXyenmRcjlGXg57obwcEL9mSljHyzEn1RYA
+     
+      # For Local LiveKit Setup
+      - LIVEKIT_URL=ws://10.10.10.10:7880
+      - LIVEKIT_BACKEND_URL=ws://10.10.10.10:7880
+      - LIVEKIT_API_KEY=devkey
+      - LIVEKIT_API_SECRET=secret
+  
     ports:
       - "3000:3000"
     # volumes:
