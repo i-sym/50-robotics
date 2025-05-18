@@ -248,7 +248,7 @@ export function IntrusionDetectionWidget({ widget, data }: IntrusionDetectionWid
 
             {/* Timestamp footer */}
             <div className="mt-2 text-xs text-right text-muted-foreground">
-                Last detection: {new Date(data?.timestamp || '').toLocaleString()}
+                Last detection: {data?.timestamp}
             </div>
         </div>
     );

@@ -19,45 +19,40 @@ The infrastructure follows a microservices architecture with MQTT as the primary
 
 The system uses MQTT topics with the following structure:
 
-- Data Sources: `/adapters/[adapterName]/datasources/[dataSourceId]/value` and `/status`
-- Control Points: `/adapters/[adapterName]/controlPoints/[controlPointId]/reported`, `/target`, and `/status`
-- Adapter Status: `/adapters/[adapterName]/connectionStatus`
-- AI Topics: `/ai/[aiModelId]/inference/result` and `/status`
+- Data Sources: `/machines/[adapterName]/datasources/[dataSourceId]/value` and `/status`
+- Control Points: `/machines/[adapterName]/controlPoints/[controlPointId]/reported`, `/target`, and `/status`
+- Adapter Status: `/machines/[adapterName]/connectionStatus`
+
+Both equipment and AI adapters work in the same way. Running AI models that are connected to the infrastrucutre, create their own udapters, such as `/machines/anomaly-detection/...` and can subsribe to necessary data topics
 
 ## Repository Structure
 
 ```
 /
-├── services/                    # Microservices
-│   ├── five-zero-protocol-adapter/  # Protocol adapter service
-│   ├── emqx/                    # MQTT broker
-│   ├── livekit/                 # Video streaming server
-│   ├── five-zero-dashboard/     # Web dashboard (Next.js)
-│   ├── simulation-s7-shelly/    # Simulation service
-│   └── five-zero-orchestrator/  # Machine logic orchestrator
+├── services/                        # Microservices
+│   ├── five-zero-adapter/           # A universal protocol adapter
+│   ├── five-zero-anomaly-detection/ # AI model for anomaly tracking
+│   ├── five-zero-dashboard/         # Web dashboard (Next.js)
+│   ├── config/                      # Files with adapter and dashboard dynamic configurations
+│   └── docker-compose.yaml          # Docker Compose file to run all together
 │
-├── apps/                        # Applications
-│   └── camera-streamer/         # Camera streaming application
+├── apps/                          # Applications that run independently form docker
+│   ├── camera-streamer/           # Camera streaming application
+│   └── livekit/                   # LiveKit Server
 │
-├── simulator/                   # Simulation tools
+├── dev/                           # Simulation tools
 │   └── machine-logical-simulator/ # Machine simulator
 │
 ├── docs/                        # Documentation
 │   ├── architecture.md          # System architecture
 │   ├── adapter-development.md   # Guide for creating new adapters
 │   ├── mqtt-topics.md           # MQTT topic structure
-│   └── deployment.md            # Deployment instructions
-│
-└── config/                      # Configuration files
-    ├── adapters/                # Adapter configurations
-    │   ├── s7.adapter.json      # S7 adapter configuration
-    │   └── shelly.adapter.json  # Shelly adapter configuration
-    └── dashboard.config.json    # Dashboard configuration
+
 ```
 
 ## Microservices
 
-### five-zero-protocol-adapter
+### five-zero-adapter
 
 A Node.js service that provides a unified interface for different industrial protocols. It includes adapter implementations for:
 - Siemens S7 PLC protocol
@@ -68,23 +63,27 @@ Each adapter converts device-specific data into a standard format and publishes 
 
 ### emqx
 
-An MQTT broker that serves as the central communication hub for the entire system. It is an open-source broker that supports MQTT 3.1.1 and 5.0 protocols which is considered a standard for modern IIoT applications.
+An industrial MQTT broker that serves as the central communication hub for the entire system. It is an open-source broker that supports MQTT 3.1.1 and 5.0 protocols which is considered a standard for modern IIoT applications.
 
-### livekit
-
-An open-source video streaming server used for camera feeds. It provides low-latency video (and if needed data) streaming over WebRTC and provides SDKs for browsers and AI agents
 
 ### five-zero-dashboard
 
 A Next.js web application that provides a configurable interface for monitoring and controlling machines.
 
-### simulation-s7-shelly
+### five-zero-anomaly-detection
 
-A simulation service that mimics S7 PLC and Shelly devices for testing and development.
+A n instance of AI model that uses LiveKit video stream to predict foreign objects, such as humans and report to MQTT
 
-### five-zero-orchestrator
+## Apps
 
-Service containing machine logic and control scripts. Can be easily extended for new usecases or trigger scenarios.
+### LiveKit
+
+An open-source video streaming server used for camera feeds designed for large video streaming projects involving AI agents. It provides low-latency video (and if needed data) streaming over WebRTC and provides SDKs for browsers and AI agents
+
+### video-streaming-app
+
+A python application allowing to select the camera from machine (such as webcam, GoPro, etc) and stream it to LiveKit
+
 
 ## Getting Started
 
@@ -99,6 +98,10 @@ Service containing machine logic and control scripts. Can be easily extended for
 cd services
 docker-compose up
 ```
+
+## Docs
+
+Each service features its own README.md file. Please check them out to get more information about particular component
 
 ## Development
 
