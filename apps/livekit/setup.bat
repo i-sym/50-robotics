@@ -31,7 +31,7 @@ echo Creating LiveKit startup script
 (
     echo @echo off
     echo cd /d "%LIVEKIT_DIR%"
-    echo start "" "%LIVEKIT_EXE%" --dev
+    echo start "" "%LIVEKIT_EXE%" --dev --bind 0.0.0.0
 ) > "%RUN_BAT%"
 
 :: Set firewall permissions
@@ -112,7 +112,7 @@ if %errorlevel% neq 0 (
 :: Start LiveKit now
 echo Starting LiveKit server immediately
 cd /d "%LIVEKIT_DIR%"
-start "" "%LIVEKIT_EXE%" --dev
+start "" "%LIVEKIT_EXE%" --dev --bind 0.0.0.0
 
 echo Setup complete!
 echo LiveKit is now running and will start automatically when Windows boots.

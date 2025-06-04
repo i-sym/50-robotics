@@ -114,26 +114,6 @@
           "width": 4,
           "height": 8
         }
-      },
-      {
-        "id": "machine-3d",
-        "type": "machine3d",
-        "title": "CNC Machine Position",
-        "position": {
-          "x": 8,
-          "y": 8,
-          "width": 4,
-          "height": 6
-        },
-        "mqttTopic": "machine/position",
-        "showGrid": true,
-        "showAxes": true,
-        "cameraPosition": {
-          "x": 5,
-          "y": 5,
-          "z": 5
-        },
-        "initialRotation": 0
       }
     ]
   }

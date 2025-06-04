@@ -2,6 +2,7 @@ services:
   mqtt-broker:
     image: emqx/emqx:latest
     container_name: emqx
+    restart: unless-stopped
     ports:
       - "1883:1883"
       - "18083:18083"
@@ -62,8 +63,8 @@ services:
     deploy:
       resources:
         reservations:
-          cpus: '5'
-          memory: 2G
+          cpus: '8'
+          memory: 4G
     env_file: './five-zero-anomaly-detection/.env'
     ports:
       - "3004:3004"
@@ -72,8 +73,7 @@ services:
     restart: unless-stopped
     networks:
       - five-zero-network
-    profiles:
-      - prod
+   
 
   dashboard:
     build:
