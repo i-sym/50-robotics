@@ -17,4 +17,4 @@ lib
 downloads
 thirdParty/sources
 .idea
-.env
+# s.env
